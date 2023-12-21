@@ -2,19 +2,26 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import streamlit as st
+from typing import List
 
 conn = sqlite3.connect('database.sqlite')
-
-def get_tables_infos()->list:
+@st.cache_data
+#Ritorna i nomi e i dati relativi alle tabelle presenti nel dataset
+def get_tables_infos()->(List[pd.DataFrame], List[str]):
     query = """SELECT name FROM sqlite_master WHERE type='table' and name <> 'sqlite_sequence';"""
     dfs = list()
+    names = list()
     query_result = psdsql(query)
-    for table in query_result.name:
-        query = f"""SELECT * FROM {table}"""
-        df = psdsql(query)
-        if df is not None:
-            dfs.append(df)
-    return dfs
+    if query_result is not None:
+        for table in query_result.name:
+            query = f"""SELECT * FROM {table}"""
+            df = psdsql(query)
+            if df is not None:
+                dfs.append(df)
+                names.append(table)
+                df.name = table
+    return dfs, names
+
 def get_detailed_matches_by_season(season:str)->pd.DataFrame:
     query = f"""SELECT Match.id, 
                                         Country.name AS country_name, 
@@ -34,6 +41,7 @@ def get_detailed_matches_by_season(season:str)->pd.DataFrame:
                                 WHERE season = '{season}'
                                 ORDER by date;"""
     return psdsql(query)
+
 @st.cache_data
 def get_season_information(country:str = None )->pd.DataFrame:
     query = f"""SELECT c.name AS country_name, l.name AS league_name, season,
