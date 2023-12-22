@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 from typing import List
-
-conn = sqlite3.connect('database.sqlite')
+st.cache_data
+def get_connection():
+    return sqlite3.connect('database.sqlite')
 @st.cache_data
 #Ritorna i nomi e i dati relativi alle tabelle presenti nel dataset
 def get_tables_infos()->(List[pd.DataFrame], List[str]):
@@ -17,9 +18,12 @@ def get_tables_infos()->(List[pd.DataFrame], List[str]):
             query = f"""SELECT * FROM {table}"""
             df = psdsql(query)
             if df is not None:
+                if table == 'Match':
+                    df = df[df.columns[:11]]
                 dfs.append(df)
                 names.append(table)
                 df.name = table
+                df.index = df[df.columns[0]]
     return dfs, names
 
 def get_detailed_matches_by_season(season:str)->pd.DataFrame:
@@ -72,6 +76,6 @@ def get_season_information(country:str = None )->pd.DataFrame:
 
 def psdsql(query:str):
     try:
-        return pd.read_sql(query, conn)
+        return pd.read_sql(query, get_connection())
     except:
         return None

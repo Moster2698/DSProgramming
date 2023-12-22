@@ -7,7 +7,6 @@ import sys
 from os.path import dirname
 st.title('Test')
 sys.path.append(dirname('plots/player_plots.py'))
-import player_plots
 detailed_matches = functions.get_detailed_matches_by_season('2010/2011')
 if detailed_matches is not None:
     #Search the max number of goals in a game

@@ -1,28 +1,33 @@
-import typing
+from typing import List
 import pandas as pd
 import streamlit as st
+import seaborn as sns
 import matplotlib.pyplot as plt
-def plot_players_attributes(df):
+import scipy
+sns.set_style('darkgrid')
+def plot_players_attributes(df, columns: List[str] ):
     rows = st.columns(2)
-    rows[0].markdown('### Overall Rating of players')
-    plot_overall_rating(df, rows[0])
-    rows[1].markdown('### Potential of players')
-    plot_potential(df, rows[1])
+    rows[0].markdown('### Density Functions')
+    plot_attribute_hist_by_name(df, columns, rows[0])
+    rows[1].markdown('### Distribution Function')
+    plot_cumulative_dist(df, columns, rows[1])
 
-def plot_overall_rating(df: pd.DataFrame, row):
-    ax: plt.Axes
-    fig, ax = plt.subplots()
-    ax.hist(df.overall_rating, bins=20)
-    plt.xlabel('Overall Rating')
-    plt.ylabel('# Players')
-    plt.title('OVERALL RATING')
-    row.pyplot(fig)
+def plot_cumulative_dist(df: pd.DataFrame, columns: List[str], row):
+    if len(columns) > 0:
+        ax: plt.Axes
+        fig, ax = plt.subplots()
+        ax = sns.kdeplot(df[columns], cumulative=True)
+        row.pyplot(fig)
+def plot_violin_plot_by_name(df: pd.DataFrame, columns: List[str], row):
+    if len(columns) > 0:
+        ax: plt.Axes
+        fig, ax = plt.subplots()
+        ax = sns.violinplot(df[columns])
+        row.pyplot(fig)     
 
-def plot_potential(df: pd.DataFrame, row):
-    ax: plt.Axes
-    fig, ax = plt.subplots()
-    ax.hist(df.potential, bins=20)
-    plt.xlabel('Overall Rating')
-    plt.ylabel('# Players')
-    plt.title('OVERALL RATING')
-    row.pyplot(fig)
+def plot_attribute_hist_by_name(df: pd.DataFrame, columns:List[str], row):
+    if len(columns) > 0:
+        ax: plt.Axes
+        fig, ax = plt.subplots()
+        ax = sns.kdeplot(df[columns], shade=True)
+        row.pyplot(fig)
