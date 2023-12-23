@@ -25,25 +25,23 @@ def get_tables_infos()->(List[pd.DataFrame], List[str]):
                 df.name = table
                 df.index = df[df.columns[0]]
     return dfs, names
-
-def get_detailed_matches_by_season(season:str)->pd.DataFrame:
+@st.cache_data
+def get_detailed_matches_by_season()->pd.DataFrame:
     query = f"""SELECT Match.id, 
-                                        Country.name AS country_name, 
-                                        League.name AS league_name, 
-                                        season, 
-                                        stage, 
-                                        date,
-                                        HT.team_long_name AS  home_team,
-                                        AT.team_long_name AS away_team,
-                                        home_team_goal, 
-                                        away_team_goal                                        
-                                FROM Match
-                                JOIN Country on Country.id = Match.country_id
-                                JOIN League on League.id = Match.league_id
-                                LEFT JOIN Team AS HT on HT.team_api_id = Match.home_team_api_id
-                                LEFT JOIN Team AS AT on AT.team_api_id = Match.away_team_api_id
-                                WHERE season = '{season}'
-                                ORDER by date;"""
+            Country.name AS Country, 
+            League.name AS League, 
+            season as Season, 
+            stage as Game, 
+            HT.team_long_name AS  home_team,
+            AT.team_long_name AS away_team,
+            home_team_goal, 
+            away_team_goal                                        
+    FROM Match
+    JOIN Country on Country.id = Match.country_id
+    JOIN League on League.id = Match.league_id
+    LEFT JOIN Team AS HT on HT.team_api_id = Match.home_team_api_id
+    LEFT JOIN Team AS AT on AT.team_api_id = Match.away_team_api_id
+    ORDER by date;"""
     return psdsql(query)
 
 @st.cache_data
