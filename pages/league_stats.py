@@ -51,4 +51,6 @@ if len(season) > 0:
 if len(country) > 0:
     mask &= detailed_matches.Country == country
 st.dataframe(detailed_matches[mask])
+if len(season) > 0 and len(country) > 0:
+    st.dataframe(queries.get_table_stats_by_season_and_country(season, country))
 
