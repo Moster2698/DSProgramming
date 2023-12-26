@@ -2,11 +2,12 @@ from typing import List
 import pandas as pd
 import streamlit as st
 import seaborn as sns
+import numpy as np
 import matplotlib.pyplot as plt
-import scipy
+import queries.players_stats as queries
 sns.set_style('darkgrid')
-def plot_players_attributes(df, columns: List[str] ):
-    rows = st.columns(2)
+
+def plot_players_attributes(df, columns: List[str], rows ):
     rows[0].markdown('### Density Functions')
     plot_attribute_hist_by_name(df, columns, rows[0])
     rows[1].markdown('### Distribution Function')
@@ -18,12 +19,12 @@ def plot_cumulative_dist(df: pd.DataFrame, columns: List[str], row):
         fig, ax = plt.subplots()
         ax = sns.kdeplot(df[columns], cumulative=True)
         row.pyplot(fig)
-def plot_violin_plot_by_name(df: pd.DataFrame, columns: List[str], row):
+def plot_violin_plot_by_name(df: pd.DataFrame, columns: List[str]):
     if len(columns) > 0:
         ax: plt.Axes
         fig, ax = plt.subplots()
         ax = sns.violinplot(df[columns])
-        row.pyplot(fig)     
+        return fig     
 
 def plot_attribute_hist_by_name(df: pd.DataFrame, columns:List[str], row):
     if len(columns) > 0:
@@ -31,3 +32,28 @@ def plot_attribute_hist_by_name(df: pd.DataFrame, columns:List[str], row):
         fig, ax = plt.subplots()
         ax = sns.kdeplot(df[columns], shade=True)
         row.pyplot(fig)
+def plot_foot_ratings():
+    fig = plt.figure(figsize=(15,5))
+    plt.subplot(1,2,1)
+    plt.title('Ratings of Right Footed Players')
+    sns.histplot(data = queries.get_ratings_from_foot('right')['avg_rating'], bins=60)
+    plt.xlabel('Average Rating')
+    plt.ylabel('Count')
+    plt.subplot(1,2,2)
+    plt.title('Ratings of Left Footed Players')
+    sns.histplot(data = queries.get_ratings_from_foot('left')['avg_rating'], bins=60)
+    plt.xlabel('Average Rating')
+    plt.ylabel('Count')
+    st.pyplot(fig)
+
+def plot_correlation_heatmap(df: pd.DataFrame):
+    corr = df[df.columns[1:]].corr()
+    # Generate a mask for the upper triangle
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+    # Set up the matplotlib figure
+    fig = plt.figure(figsize=(30, 15))
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(corr, mask=mask, cmap=plt.cm.Reds, vmax=.3, center=0, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
+    st.pyplot(fig)
