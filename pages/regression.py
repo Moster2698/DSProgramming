@@ -9,6 +9,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+import seaborn as sns
+
 df = queries.get_players_attributes()
 if df is not None:
    st.dataframe(df.head())
@@ -53,8 +55,8 @@ if df is not None:
          st.write('RMSE', np.sqrt(metrics.mean_squared_error(y_test, y_prediction)))
       with tab3:
          #Ordinary Least Squares
-         st.write(y.shape)
-         st.write(X.shape)
          result = sm.OLS(y, X).fit()
          st.write(result.summary())
+         
+
 
