@@ -41,9 +41,20 @@ def get_detailed_matches_by_season()->pd.DataFrame:
     ORDER by date;"""
     return psdsql(query)
 
+def get_df_info(buffer) -> pd.DataFrame:
+     lines = buffer.getvalue ().split ('\n')
+     # lines to print directly
+     lines_to_print = [0, 1, 2, -2, -3]
+     # lines to arrange in a df
+     list_of_list = []
+     for x in lines [5:-3]:
+         list = x.split ()
+         list_of_list.append (list)
+     info_df = pd.DataFrame (list_of_list, columns=['index', 'Column', 'Non-null-Count', 'null', 'Dtype'])
+     info_df.drop (columns=['index', 'null'], axis=1, inplace=True)
+     return info_df
 
-
-def psdsql(query:str):
+def psdsql(query:str) -> pd.DataFrame:
     try:
         return pd.read_sql(query, get_connection())
     except:

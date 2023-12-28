@@ -4,7 +4,7 @@ import sqlite3
 st.cache_data
 def __get_connection():
     return sqlite3.connect('database.sqlite')
-def __psdsql(query:str):
+def __psdsql(query:str) -> pd.DataFrame:
     try:
         conn = __get_connection()
         df = pd.read_sql_query(query, __get_connection())

@@ -55,5 +55,19 @@ def plot_correlation_heatmap(df: pd.DataFrame):
     # Generate a custom diverging colormap
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, mask=mask, cmap=plt.cm.Reds, vmax=.3, center=0, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
+    sns.heatmap(corr, cmap=plt.cm.Reds,annot=True)
+    st.pyplot(fig)
+
+def plot_correlation_heatmap_overall(df: pd.DataFrame):
+    corr = df.corr()
+    # Generate a mask for the upper triangle
+    x = corr[['overall_rating']]
+    x = x.sort_values(by='overall_rating', ascending=False)
+    mask = np.triu(np.ones_like(x, dtype=bool))
+    # Set up the matplotlib figure
+    fig = plt.figure(figsize=(30, 20))
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(x, cmap=plt.cm.Reds,annot=True)
     st.pyplot(fig)
