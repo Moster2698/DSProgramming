@@ -27,3 +27,4 @@ def plot_featuers(df: pd.DataFrame):
             df_c.loc[:, country] = list(df.loc[df['Country']==country,column])
         i+=1
         rows[(i)%2].pyplot(df_c.plot(rot=45, title=column).figure)
+        

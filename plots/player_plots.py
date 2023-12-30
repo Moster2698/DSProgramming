@@ -30,7 +30,7 @@ def plot_attribute_hist_by_name(df: pd.DataFrame, columns:List[str], row):
     if len(columns) > 0:
         ax: plt.Axes
         fig, ax = plt.subplots()
-        ax = sns.kdeplot(df[columns], shade=True)
+        ax = sns.kdeplot(df[columns], fill=True)
         row.pyplot(fig)
 def plot_foot_ratings():
     fig = plt.figure(figsize=(15,5))

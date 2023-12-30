@@ -4,6 +4,21 @@ import typing
 def get_teams_attributes() -> pd.DataFrame:
     query = """Select * from team_attributes;"""
     return f.psdsql(query)
+def create_view_team_stats():
+    query = """
+    Create view Team_stats as
+    Select t.team_long_name,t.team_api_id, t.team_fifa_api_id,STRFTIME('%Y', ta.date) || "/" || (STRFTIME('%Y', ta.date) +1) as season,
+    (ta.buildUpPlaySpeed +
+    coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))+
+    ta.buildUpPlayPassing + ta.chanceCreationPassing + ta.chanceCreationCrossing + 
+    ta.chanceCreationShooting + ta.defencePressure+ ta.defenceAggression+ ta.defenceTeamWidth) as overall,
+    ta.buildUpPlaySpeed,
+    coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))  as PlayDribbling, 
+    ta.buildUpPlayPassing, ta.chanceCreationPassing, ta.chanceCreationCrossing, 
+    ta.chanceCreationShooting, ta.defencePressure, ta.defenceAggression, ta.defenceTeamWidth
+    from Team_Attributes ta join Team t  on ta.team_fifa_api_id  = t.team_fifa_api_id
+    Order by overall desc
+    """
 
 def get_teams_by_points() -> pd.DataFrame:
     query = """Select  h.season as Season,h.name as League, t.team_long_name,Sum(3*(h.wins + a.wins) + (h.draws + a.draws)) as Pt,
@@ -34,15 +49,24 @@ def get_most_goals_by_season() -> pd.DataFrame:
     return f.psdsql(query)
 
 def get_most_overall() -> pd.DataFrame:
-    query = """Select t.team_long_name,t.team_api_id, t.team_fifa_api_id,STRFTIME('%Y', ta.date) || "/" || (STRFTIME('%Y', ta.date) +1) as season,
-(ta.buildUpPlaySpeed +
-coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))+
-ta.buildUpPlayPassing + ta.chanceCreationPassing + ta.chanceCreationCrossing + 
-ta.chanceCreationShooting + ta.defencePressure+ ta.defenceAggression+ ta.defenceTeamWidth) as overall,
-ta.buildUpPlaySpeed,
-coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))  as PlayDribbling, 
-ta.buildUpPlayPassing, ta.chanceCreationPassing, ta.chanceCreationCrossing, 
-ta.chanceCreationShooting, ta.defencePressure, ta.defenceAggression, ta.defenceTeamWidth
-from Team_Attributes ta join Team t  on ta.team_fifa_api_id  = t.team_fifa_api_id
-Order by overall desc"""
+    query = """Select team_long_name , overall from Team_stats ts Limit 10"""
+    return f.psdsql(query)
+def get_most_points() -> pd.DataFrame:
+    query = """Select t.team_long_name,
+    3*Sum(h.wins + a.wins) + Sum(h.draws + a.draws) as Points
+    FROM home_stats h JOIN away_stats a On h.team = a.team and h.season = a.season JOIN team t on h.team = t.team_api_id JOIN Country c on h.country = c.id 
+    GROUP BY t.team_long_name 
+    Order by Points desc"""
+    return f.psdsql(query)
+
+def get_points_and_max_overall() -> pd.DataFrame:
+    query = """
+Select g.team_long_name,g.GD, Max(ts.overall) as overall FROM(
+Select h.season, t.team_long_name,t.team_api_id, Sum(h.goals + a.goals) as Gd FROM home_stats h JOIN away_stats 
+            a On h.team = a.team and h.season = a.season JOIN team t on h.team = t.team_api_id JOIN Country c on h.country = c.id 
+            GROUP BY  t.team_long_name
+            Order by Gd desc) g Join Team_stats ts  on g.team_api_id = ts.team_api_id
+            Group by g.team_long_name
+            order by g.gd desc, ts.overall desc
+    """
     return f.psdsql(query)
