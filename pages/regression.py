@@ -8,12 +8,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn import datasets, ensemble
 from sklearn.inspection import permutation_importance
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeRegressor, plot_tree
-from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
-import statsmodels.api as sm
 import seaborn as sns
 import functions as funct
 st.set_page_config(layout="wide")

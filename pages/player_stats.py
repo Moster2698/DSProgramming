@@ -1,5 +1,6 @@
 import queries.players_stats as queries
 import plots.player_plots as plots
+import functions
 import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
@@ -28,18 +29,7 @@ def get_plot_of_distribution(df:pd.DataFrame, column:str):
 #Obtain the parameter mu and sigma of the data
 def get_distribution_from_data(column:str):
     return norm.fit(player_attributes[column])
-def get_df_info(buffer):
-     lines = buffer.getvalue ().split ('\n')
-     # lines to print directly
-     lines_to_print = [0, 1, 2, -2, -3]
-     # lines to arrange in a df
-     list_of_list = []
-     for x in lines [5:-3]:
-         list = x.split ()
-         list_of_list.append (list)
-     info_df = pd.DataFrame (list_of_list, columns=['index', 'Column', 'Non-null-Count', 'null', 'Dtype'])
-     info_df.drop (columns=['index', 'null'], axis=1, inplace=True)
-     return info_df
+
 
 st.markdown('# EDA for Players')
 st.markdown(''' In this section I'm going to do some basic explainatory data analaysis of the player statistics in order to
@@ -67,7 +57,7 @@ st.write("""<ul> <li> <b>Player_api_id</b>: id used for identifying a specific p
 buf = io.StringIO()
 players.info(buf=buf)
 st.markdown("And if we want to get more information about of the type of the column and the null values")
-st.dataframe(get_df_info(buf), hide_index=True)
+st.dataframe(functions.get_df_info(buf), hide_index=True)
 st.markdown("Lastly let's calculate some ordinary statistics for the height and the weight.")
 st.dataframe(players.describe().T[3:])
 st.markdown('#### Distributions of player data')
@@ -96,7 +86,7 @@ st.markdown(f"""The columns here more than the previous table, more precisely th
 st.markdown('Concerning about the table statistic with respect to the count of the values and of the null ones:')
 buf = io.StringIO()
 player_attributes.info(buf=buf)
-st.dataframe(get_df_info(buf))
+st.dataframe(functions.get_df_info(buf))
 
 st.markdown('We can see that the dataset has over 180k rows, disregarding of the fields which are nulls. A number like this is highly discouraging to work for, because if we see at the computation usage for storing the dataframe:')
 st.write('Mega Bytes for storing the frame: ',player_attributes.memory_usage(deep=True).sum() / 1024 / 1024)
