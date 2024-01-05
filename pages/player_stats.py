@@ -7,6 +7,7 @@ import seaborn as sns
 import numpy as np
 from scipy.stats import norm
 import io
+st.set_page_config(layout="wide")
 #Obtain the top-n number of players specified by the field number and the column
 def get_top_number_players(number:int, column:str):
     fig = plt.figure(figsize=(10, 5))
@@ -132,13 +133,20 @@ st.markdown("""As expected the correlation has a lot of linear correlations and 
 player_attributes= players.sort_values(by="Overall_Rating", ascending=False).reset_index(drop=True)  
 
 st.markdown('''## Preferred foot''')
+st.markdown('Another interesting characteristics of the player is the preferred foot, we will start plotting the percentuals of right and left footers and then we would check the distribution of those players.')
 foot = queries.get_preferred_foot()
-fig = plt.figure(figsize=(10, 6))
+rows = st.columns([0.2, 0.6, 0.2])
+fig = plt.figure(figsize=(6, 6))
 plt.pie(foot, labels=['Left', 'Right'], autopct='%.0f%%')
-st.pyplot(fig)
-st.write('As expected there are more right footed players and if we see about the distribution of the players with the respect to the foot then')
-plots.plot_foot_ratings()
+rows[1].pyplot(fig)
 
+st.write('As expected there are more right footed players and if we see about the distribution of the players with the respect to the foot then')
+left_foot_average = queries.get_ratings_from_foot('left')['avg_rating']
+right_foot_average = queries.get_ratings_from_foot('right')['avg_rating']
+plots.plot_foot_ratings()
+rows = st.columns([0.1, 0.4, 0.4, 0.1])
+rows[1].dataframe(right_foot_average.describe().T)
+rows[2].dataframe(left_foot_average.describe().T)
 st.markdown('''## Strongest players''')
 
 st.markdown("""It may be valuable to find the players that had the highest performance scores (overall ratings) across all seasons

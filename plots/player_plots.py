@@ -52,10 +52,9 @@ def plot_correlation_heatmap(df: pd.DataFrame):
     mask = np.triu(np.ones_like(corr, dtype=bool))
     # Set up the matplotlib figure
     fig = plt.figure(figsize=(30, 15))
-    # Generate a custom diverging colormap
-    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, cmap=plt.cm.Reds,annot=True)
+    sns.heatmap(corr, cmap="Blues",annot=True)
     st.pyplot(fig)
 
 def plot_correlation_heatmap_overall(df: pd.DataFrame):
@@ -66,8 +65,7 @@ def plot_correlation_heatmap_overall(df: pd.DataFrame):
     mask = np.triu(np.ones_like(x, dtype=bool))
     # Set up the matplotlib figure
     fig = plt.figure(figsize=(30, 20))
-    # Generate a custom diverging colormap
-    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+    
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(x, cmap=plt.cm.Reds,annot=True)
+    sns.heatmap(x, cmap="Blues",annot=True)
     st.pyplot(fig)

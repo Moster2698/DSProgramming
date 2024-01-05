@@ -58,7 +58,5 @@ def plot_overall(df: pd.DataFrame):
 def plot_correlation_points_overall(df: pd.DataFrame):
     corr = df[df.columns[1:]].corr()
     # Generate a mask for the upper triangle
-    fig = plt.figure(figsize=(10, 6))
-    # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(corr, cmap=plt.cm.Reds,annot=True)
-    st.pyplot(fig)
+    sns.regplot(data=df, x='overall', y='Gd')
+    

@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import io
+st.set_page_config(layout="wide")
 st.markdown('# Team statistics')
 st.markdown("""This section start with a little description of what part of the dataset I used which is the 
             <i>team_attributes</i>. In the second part I do data cleaning of the table because for mine purposes it has some null values
@@ -57,24 +58,10 @@ st.markdown('### Points and overall')
 st.markdown('In this last section we will see if there is some correlation between the total number of points done and the maximum overall of the squad:')
 team_overall_points = team_queries.get_points_and_max_overall()
 st.dataframe(team_overall_points)
+fig = plt.figure(figsize=(6, 6))
+plt.title('Scatter plot with regression line')
 team_plots.plot_correlation_points_overall(team_overall_points)
-"""team_attributes['buildUpPlayDribbling'].replace('None', np.nan, inplace=True)
-team_attributes['buildUpPlayDribbling'].fillna(team_attributes['buildUpPlayDribbling'].mean(), inplace=True)
-st.markdown('Replace the null values with the mean')
-team_attributes['buildUpPlayDribbling'] = team_attributes['buildUpPlayDribbling'].astype(np.int64) 
-buf = io.StringIO()
-team_attributes.info(buf=buf)
-st.dataframe(team_queries.f.get_df_info(buf))
-number_columns = team_attributes.select_dtypes(include=[np.number])
-number_columns = number_columns.columns[3:]
-team_attributes['overall'] = team_attributes[number_columns].sum(axis=1)
-interestings_df = team_attributes[['team_api_id','overall', 'date']]
-interestings_df.sort_values(by='overall', ascending=False, inplace=True)
-interestings_df['date'] = pd.to_datetime(interestings_df['date'])
-interestings_df.index = interestings_df['date']
-fig = plt.figure(figsize=(10,6))
-plt.plot(interestings_df, )
 st.pyplot(fig)
-"""
-
-
+st.markdown('''From what we're seeing there is not a linear relationship between the overall of the stats of a squad and the total number of points that it has done and to prove that we need to calculate the correlation coefficient''')
+corr = round(team_overall_points['overall'].corr(team_overall_points['Gd']),2)
+st.markdown(f'Correlation between overall and points done is {corr}' )

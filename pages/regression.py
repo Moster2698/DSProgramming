@@ -16,13 +16,13 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import seaborn as sns
 import functions as funct
-
+st.set_page_config(layout="wide")
 st.markdown('# Regression')
 st.markdown('Regression is a statistical method used to analyze the relationship between one or more independent variables and a dependent variable. It is a powerful tool in the field of data analysis and machine learning, providing insights into the patterns and trends within datasets.')
 st.markdown('## What you can do in this page')
 st.markdown('The focus of this page is to do different types of regression for the player_attributes table on the dependent variable *overall_rating*. In this page you can also choose between three different types of regression: Linear, DecisionTree or OLS.')
 st.markdown('## Dataset')
-st.markdown('The dataset that we are going to use is the following:')
+st.markdown('The dataset that we are going to use is the player attributes table')
 
 df = queries.get_players_attributes()
 st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
