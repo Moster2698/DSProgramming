@@ -1,4 +1,4 @@
-## Programming and Databases Mid term project##
+## Programming and Databases Mid term project
 
 Install the requirements via from the cmd
 pip install -r requirements.txt
