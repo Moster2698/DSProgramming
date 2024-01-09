@@ -29,18 +29,17 @@ st.markdown("""This section focuses on the cleaning of the table and the procedu
             <li> Decide what to do with the None values;
             <li> Removing the columns in which we are not interested in for the plottings
             </ul>""",unsafe_allow_html=True)
-st.markdown("### None Values")
+st.markdown("### None Values and removing columns")
 st.markdown(f'''I've decided to replace the None values with the mean because even though
             over {round((1458-489)/1458 * 100,2) } % of the data is None values I need the column for calculating a metrics that
             will be useful nextly.''')
-st.markdown(f'''In the new dataset that I'm going to use for the plotting I introduced the team_names, the season 
-            where the statistics are taken and then the overall, which is the sum of all numeric features and that will be
+st.markdown(f'''In the new dataset that I'm going to use for the plotting I introduced the team_names and the overall, which is the sum of all numeric features and that will be
             our metrics. The dataset will be the folliwng:''')
 team_attributes = team_queries.get_most_overall()
 st.dataframe(team_attributes)
+st.markdown('All the other columns were removed because they were not relevant for the next computations.')
 st.markdown('## Data visualization and EDA')
 st.markdown('''This section will focus on the plot of interesting features and some EDA.''')
-st.markdown('### Most overall teams')
 team_plots.plot_overall(team_queries.get_most_overall())
 st.markdown('### Top winrate teams')
 st.markdown('''I start with the most winning clubs overall.Defined the winrate as $$wr = \dfrac{wins}{games} $$. The dataframe that I got is the following:''')

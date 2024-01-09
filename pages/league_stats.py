@@ -9,7 +9,6 @@ import numpy as np
 import functions
 
 st.set_page_config(layout="wide")
-        
 st.markdown('# League statistics\n')
 st.markdown("In this page we're looking for the statistics of the matches played and the ordinary statistics such as average goals per games, max goals per seasons and so on.")
 
@@ -42,7 +41,7 @@ st.markdown('We see that the big countries are stabilized at roughly 350 games a
 st.markdown('''However, in the minor leagues, a lower number of games is evident, primarily attributed to the reduced quantity of participating teams. A notable anomaly emerges in the Belgian league during the 2013/2014 season, where the total number of games played is unusually low, standing at 6. Let's investigate more about that''')
 st.markdown('### What happened in the 2013/2014 in Belgium?')
 st.markdown('If we see in the dataframe in that season, then the result is the following:')
-detailed_matches = functions.get_detailed_matches_by_season()
+detailed_matches = functions.get_detailed_country_matches()
 condition = (detailed_matches.Country == 'Belgium') & (detailed_matches.Season=='2013/2014')
 belgium_games_2013_2014 = detailed_matches[condition]
 st.dataframe(belgium_games_2013_2014[['Game','home_team','away_team','home_team_goal','away_team_goal']],hide_index=True)
@@ -54,8 +53,6 @@ if(card_games_df.size > 0):
     plots.plot_cards_per_season(card_games_df)
     st.pyplot(fig)
             
-detailed_matches = functions.get_detailed_matches_by_season()
-
 st.markdown('## Matches details and Ranking Table')
 st.markdown('In this last section we are going to visualize by tables all the games played in a spefic country and on a selected season. Lastly for that season and country the ranking table will be displayed.')
 form = st.form('Input_box', clear_on_submit=False, border=False)

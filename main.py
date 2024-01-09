@@ -42,6 +42,11 @@ def create_main_page():
                 rom Electronic Arts and EA SPORTS, and betting odds from up to 10 odds providers.''')
     st.markdown('## Data exploratory')
     st.markdown('''On this page, you can choose the table for which you wish to retrieve fundamental details, including the quantity of values, column types, basic statistics, and simple visualizations. ''')
+    st.markdown('### Database architecture')
+    st.markdown('The dataset is contained in a database file, more precisely is a sqlite type of a RDBMS database which is not that different from the usual SQL. The unique difference that matters for us is that SQlite is more lightweight and allows only one users. The architecture of the database is shown in the next image')
+    rows = st.columns([0.25, 0.5, 0.25])
+    rows[1].image('./assets/db_architecture.png', caption='Architecture of the database', width=500)
+    st.markdown('The tables represent which kind of data we have to deal with, there are in total 7 tables and each of them has a primary key (the one in bold) which identifies each row of the tables. The links show that there is a relationship between the tables involved and usually those links are between foreign_keys.')
     tables_info, table_names = functions.get_tables_infos()
     if len(table_names) == 0:
         st.write('Error fetching Data')
@@ -60,10 +65,21 @@ def create_main_page():
                 st.dataframe(table_to_show, hide_index=True)  
                 st.markdown("### Table description")
                 st.dataframe(table_to_show.describe().T)
-                buf = io.StringIO()
-                table_to_show.info(buf=buf)
                 st.markdown('### Table info')
-                selection = st.dataframe(functions.get_df_info(buf))
+                buf = io.StringIO()
+                if option == 'Match':
+                    table_to_show[table_to_show.columns[:-30]].info(buf=buf)
+                else:
+                    table_to_show.info(buf=buf)
+                df = functions.get_df_info(buf)
+                st.dataframe(df)
+                if option == 'Match':
+                    st.markdown(''' The table Match contains informations about the all the matches done in the seasons 2008-2016. It also contains 
+                                information about the stats of the game such as possession, goals done, goals done by home team and then it also have
+                                bettings from ten different providers for each game. Each betting site has three different types of betting depending on the result of the game: win, draw, loss.
+                                For the whole project i decided to not use those columns because those were not useful for what i wanted to show, moreover i decided to drop the
+                                formations lineup noted by the columns containing the big X on the right of the name.''')
+                
             else:
                 print(option)
 def hide_warning():

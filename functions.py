@@ -6,8 +6,7 @@ from typing import List
 st.cache_data
 def get_connection():
     return sqlite3.connect('database.sqlite')
-@st.cache_data
-#Ritorna i nomi e i dati relativi alle tabelle presenti nel dataset
+#Esegue una query che ottiene i nomi di tutte le tabelle che sono presenti all'interno del database
 def get_tables_infos()->(List[pd.DataFrame], List[str]):
     query = """SELECT name FROM sqlite_master WHERE type='table' and name <> 'sqlite_sequence';"""
     dfs = list()
@@ -22,8 +21,9 @@ def get_tables_infos()->(List[pd.DataFrame], List[str]):
                 names.append(table)
                 df.index = df[df.columns[0]]
     return dfs, names
+#Ottiene tutti i match giocati nella 
 @st.cache_data
-def get_detailed_matches_by_season()->pd.DataFrame:
+def get_detailed_country_matches()->pd.DataFrame:
     query = f"""SELECT Match.id, 
             Country.name AS Country, 
             League.name AS League, 
@@ -43,8 +43,6 @@ def get_detailed_matches_by_season()->pd.DataFrame:
 
 def get_df_info(buffer) -> pd.DataFrame:
      lines = buffer.getvalue ().split ('\n')
-     # lines to print directly
-     lines_to_print = [0, 1, 2, -2, -3]
      # lines to arrange in a df
      list_of_list = []
      for x in lines [5:-3]:
