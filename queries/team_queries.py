@@ -51,6 +51,7 @@ def get_most_goals_by_season() -> pd.DataFrame:
 def get_most_overall() -> pd.DataFrame:
     query = """Select team_long_name , overall from Team_stats ts Limit 10"""
     return f.psdsql(query)
+
 def get_most_points() -> pd.DataFrame:
     query = """Select t.team_long_name,
     3*Sum(h.wins + a.wins) + Sum(h.draws + a.draws) as Points
