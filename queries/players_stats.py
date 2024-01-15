@@ -1,26 +1,16 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-
-st.cache_data
-def __get_connection():
-    return sqlite3.connect('database.sqlite')
-def __psdsql(query:str):
-    try:
-        df = pd.read_sql_query(query, __get_connection())
-        return df
-    except:
-        return None
-
+import functions as f
 def get_players():
     query = 'Select * from Player'
-    return __psdsql(query)
+    return f.psdsql(query)
 def get_players_attributes():
     query = 'Select * from Player_Attributes'
-    return __psdsql(query)
+    return f.psdsql(query)
 def get_non_unique_stats():
     query = """Select p.player_name as Player, p.height, p.weight, pa.* from Player p JOIN Player_Attributes pa on p.player_api_id = pa.player_api_id Order by p.player_name asc"""
-    return __psdsql(query)
+    return f.psdsql(query)
 def get_player_stats():
     query = """Select p.player_name as Player,
     p.height as Height,
@@ -62,11 +52,11 @@ def get_player_stats():
     AVG(gk_reflexes) AS "Goalkeeper_Reflexes"
    	FROM Player_Attributes pa Join Player p  on p.player_api_id  = pa.player_api_id  
   	GROUP BY p.player_api_id Order by p.player_name asc;"""
-    return __psdsql(query)
+    return f.psdsql(query)
 
 def get_preferred_foot():
     query = "Select Sum(CASE  WHEN preferred_foot ='left' THEN 1 END) as left, Sum(CASE  WHEN preferred_foot ='right' THEN 1 END) as right  from Player_Attributes pa ;"
-    df = __psdsql(query)
+    df = f.psdsql(query)
     return [df.left[0], df.right[0]]
     
 def get_ratings_from_foot(foot:str):
@@ -78,4 +68,4 @@ def get_ratings_from_foot(foot:str):
     JOIN PLAYER_ATTRIBUTES AS pa
     ON pa.player_api_id = pl.player_api_id
     GROUP BY pl.player_name) WHERE pf_foot = '{foot}' '''
-    return __psdsql(query)
+    return f.psdsql(query)

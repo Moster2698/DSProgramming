@@ -1,10 +1,16 @@
 import pandas as pd
 import streamlit as st
 import sqlite3
-st.cache_data
-def __get_connection():
+
+def __get_connection() -> sqlite3.Connection:
+    """
+    Private method which opens a connection when called, remember to close it when used.s
+    """
     return sqlite3.connect('database.sqlite')
 def __psdsql(query:str) -> pd.DataFrame:
+    """
+    Private method which executes the query passed by argument and returns it as a dataframe.
+    """
     try:
         conn = __get_connection()
         df = pd.read_sql_query(query, __get_connection())
@@ -14,43 +20,11 @@ def __psdsql(query:str) -> pd.DataFrame:
         st.write(e)
         return None
     
-def __create_views():
-    query = """CREATE VIEW home_stats
-    AS 
-	SELECT name, season, home_team as team,Sum(win_games) as wins,
-		Sum(draw_games) as draws, Sum(lost_games) as losses,
-		Sum(goals) as goals,Sum(goals_received) as goals_received, country from(
-			Select l.name, m.season, m.id, m.home_team_api_id as home_team, m.home_team_goal > m.away_team_goal as win_games,
-			(m.home_team_goal = m.away_team_goal) as draw_games ,
-			(m.home_team_goal < m.away_team_goal) as lost_games,
-            l.country_id as country,
-            m.away_team_goal as goals_received,
-			m.home_team_goal as goals
-			 FROM Match m Join League l on m.league_id = l.id
-			 Group by m.season, m.home_team_api_id, m.away_team_api_id
-			 )
-	group by home_team, season
- 	order by name, season;""" 
-    cur = __get_connection()
-    cur.execute(query)
-    query = """CREATE   VIEW away_stats
-    AS 
-    Select name, season,away_team as team,Sum(win_games) as wins,
-            Sum(draw_games) as draws, Sum(lost_games) as losses, Sum(goals) as goals,Sum(goals_received) as goals_received,country  from(
-    Select l.name, m.season, m.id, m.away_team_api_id as away_team,
-    (m.home_team_goal < m.away_team_goal) as win_games,
-    (m.home_team_goal = m.away_team_goal) as draw_games,
-    (m.home_team_goal > m.away_team_goal) as lost_games,
-    l.country_id as country,
-    m.away_team_goal as goals,
-    m.home_team_goal as goals_received
-    FROM Match m Join League l on m.league_id = l.id
-    Group by m.season, m.home_team_api_id,m.away_team_api_id
-    ) group by away_team, season
-    order by name, season;"""
-    cur.execute(query)
+def get_table_stats_by_season_and_country(season:str, country: str) -> pd.DataFrame:
+    """
+    Return as a pandas dataframe the table stats of a specific season and country.
 
-def get_table_stats_by_season_and_country(season:str, country: str):
+    """
     query = f"""SELECT t.team_long_name as Team, 
     3*(h.wins + a.wins) + (h.draws + a.draws) as Points,
     (h.wins + a.wins) as Wins, (h.draws + a.draws) as Draws, (h.losses + a.losses) as Losses, (h.goals + a.goals) as Goal_Done,
@@ -66,25 +40,31 @@ def get_table_stats_by_season_and_country(season:str, country: str):
     df = __psdsql(query)
     return df
 
-def __destroy_views():
-    query = 'DROP VIEW home_stats;'
-    conn = __get_connection()
-    conn.execute(query)
-    query = 'DROP VIEW away_stats'
-    conn.execute(query)
     
 def get_leagues() -> pd.DataFrame:
+    """
+    Returns as a pandas dataframe all the information available for the leagues
+    """
     query = 'Select * from League'
     return __psdsql(query)
 
 def get_country() -> pd.DataFrame:
+    """
+    Return a dataframe which contains all the countries present in the dataframe.
+    """
     query = 'Select name from Country'
     return __psdsql(query)
 
 def get_leagues_and_country() -> pd.DataFrame:
+    """
+    Returns a pandas dataframe which contains the league name and country name.
+    """
     query = 'Select l.name as league_name, c.name as country_name from League l join Country c on l.country_id  = c.id;'
     return __psdsql(query)
 def get_league_name_from_country(country:str) -> str:
+    """
+    Get the league name for the speicfic country passed as parameter.
+    """
     query = f"Select l.name as Name from League l join Country c where c.name = '{country}'"
     try:
         conn = __get_connection()
@@ -93,10 +73,16 @@ def get_league_name_from_country(country:str) -> str:
     except Exception  as e:
         print(e)
 def get_seasons() -> pd.DataFrame:
+    """
+    Return the different seasons available in the dataset.
+    """
     query = 'Select distinct(season) from Match m'
     return __psdsql(query)
 
 def get_leagues_stats(season:str = '') -> pd.DataFrame:
+    """
+    Get the league stats by season, if the season is not specified then the method returns all the league stats.
+    """
     query = """Select l.name as League,c.name as Country, m.season as Season,
         count(distinct m.stage) as Games,
         max(max(m.home_team_goal), max(m.away_team_goal)) as MaxGoals,
@@ -120,7 +106,10 @@ def get_leagues_stats(season:str = '') -> pd.DataFrame:
     df.index = df.League
     return df
 
-def get_cards_game_per_season_and_country():
+def get_cards_game_per_season_and_country() -> pd.DataFrame:
+    """
+    Returns as a pandas dataframe the games in which a yellow or red card has been given.
+    """
     query =f'''SELECT m.season as Season ,Count(goal) as games_with_card
     FROM Match m
     Join Country c
@@ -133,7 +122,10 @@ def get_cards_game_per_season_and_country():
     df.drop(labels=['Season'],axis=1, inplace=True)
     return df
 
-def get_games_played():
+def get_games_played() -> pd.DataFrame:
+    """
+    Returns as a pandas dataframe the total number of games played in each league and season.
+    """
     query = '''Select l.name as League , m.season as Season,Count(m.stage) as Games_Played from "Match" m
         Join League l
         on m.league_id  = l.id

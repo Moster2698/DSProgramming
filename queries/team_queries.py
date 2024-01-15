@@ -4,21 +4,6 @@ import typing
 def get_teams_attributes() -> pd.DataFrame:
     query = """Select * from team_attributes;"""
     return f.psdsql(query)
-def create_view_team_stats():
-    query = """
-    Create view Team_stats as
-    Select t.team_long_name,t.team_api_id, t.team_fifa_api_id,STRFTIME('%Y', ta.date) || "/" || (STRFTIME('%Y', ta.date) +1) as season,
-    (ta.buildUpPlaySpeed +
-    coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))+
-    ta.buildUpPlayPassing + ta.chanceCreationPassing + ta.chanceCreationCrossing + 
-    ta.chanceCreationShooting + ta.defencePressure+ ta.defenceAggression+ ta.defenceTeamWidth) as overall,
-    ta.buildUpPlaySpeed,
-    coalesce (ta.buildUpPlayDribbling,Round(avg(ta.buildUpPlayDribbling) over ()))  as PlayDribbling, 
-    ta.buildUpPlayPassing, ta.chanceCreationPassing, ta.chanceCreationCrossing, 
-    ta.chanceCreationShooting, ta.defencePressure, ta.defenceAggression, ta.defenceTeamWidth
-    from Team_Attributes ta join Team t  on ta.team_fifa_api_id  = t.team_fifa_api_id
-    Order by overall desc
-    """
 
 def get_teams_by_points() -> pd.DataFrame:
     query = """Select  h.season as Season,h.name as League, t.team_long_name,Sum(3*(h.wins + a.wins) + (h.draws + a.draws)) as Pt,

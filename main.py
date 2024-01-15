@@ -79,7 +79,6 @@ def create_main_page():
                                 bettings from ten different providers for each game. Each betting site has three different types of betting depending on the result of the game: win, draw, loss.
                                 For the whole project i decided to not use those columns because those were not useful for what i wanted to show, moreover i decided to drop the
                                 formations lineup noted by the columns containing the big X on the right of the name.''')
-                
             else:
                 print(option)
 def hide_warning():
