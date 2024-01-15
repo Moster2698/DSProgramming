@@ -1,17 +1,28 @@
 import streamlit as st
-import sqlite3
 import pandas as pd
 import functions as f
-def get_players():
+def get_players()->pd.DataFrame:
+    """
+    Return as a pandas dataframe the table Player which contains anagrafy information.
+    """
     query = 'Select * from Player'
     return f.psdsql(query)
-def get_players_attributes():
+def get_players_attributes()->pd.DataFrame:
+    """
+    Return as a pandas dataframe the table PlayerAttributes which contains the attributes of the player changing by season.
+    """
     query = 'Select * from Player_Attributes'
     return f.psdsql(query)
-def get_non_unique_stats():
+def get_non_unique_stats()->pd.DataFrame:
+    """
+    Returns as a pandas dataframe the characteristics of the players such as name, height, weight and attributes by season.
+    """
     query = """Select p.player_name as Player, p.height, p.weight, pa.* from Player p JOIN Player_Attributes pa on p.player_api_id = pa.player_api_id Order by p.player_name asc"""
     return f.psdsql(query)
-def get_player_stats():
+def get_player_stats()->pd.DataFrame:
+    """
+    Return as a pandas dataframe the average of the statistics of the players during all the seasons played.
+    """
     query = """Select p.player_name as Player,
     p.height as Height,
     p.weight as Weight,
@@ -54,12 +65,18 @@ def get_player_stats():
   	GROUP BY p.player_api_id Order by p.player_name asc;"""
     return f.psdsql(query)
 
-def get_preferred_foot():
+def get_preferred_foot()->pd.DataFrame:
+    """
+    Return the total number of left or right foot players.
+    """
     query = "Select Sum(CASE  WHEN preferred_foot ='left' THEN 1 END) as left, Sum(CASE  WHEN preferred_foot ='right' THEN 1 END) as right  from Player_Attributes pa ;"
     df = f.psdsql(query)
     return [df.left[0], df.right[0]]
     
-def get_ratings_from_foot(foot:str):
+def get_ratings_from_foot(foot:str)->pd.DataFrame:
+    """
+    Get the average ratings of the player based on the foot parameter.
+    """
     if foot != 'left' and foot != 'right':
         return None
     query = f'''SELECT avg_rating FROM 

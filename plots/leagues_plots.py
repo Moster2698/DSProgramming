@@ -1,10 +1,9 @@
 import streamlit as st
 import seaborn as sns
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 def plot_games_per_season(df: pd.DataFrame):
-    sns.barplot(df, y = df.Games_Played, x= df.Season, hue=df.League, )
+    sns.barplot(df, y = df.Games_Played, x= df.Season, hue=df.League)
     plt.title('Games played Over Seasons 2008-2016')
     plt.ylabel('Games Played')
     plt.xlabel('Seasons')
